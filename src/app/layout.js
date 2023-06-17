@@ -1,5 +1,7 @@
 import "./globals.css";
 import { NextAuthProvider } from "./providers";
+import Navigation from "@/components/Navigation";
+import Header from "@/components/Header";
 
 export const metadata = {
 	title: "Create Next App",
@@ -10,7 +12,22 @@ export default function RootLayout({ children }) {
 	return (
 		<html lang="en">
 			<body>
-				<NextAuthProvider>{children}</NextAuthProvider>
+				<NextAuthProvider>
+					<div
+						className="min-h-screen bg-slate-800 grid"
+						style={{ gridTemplateRows: "auto 1fr" }}
+					>
+						<Header />
+						<main
+							className="grid w-full max-w-screen-xl xl:max-w-screen-2xl mx-auto py-10 px-6 lg:px-10 xl:px-20 gap-6"
+							style={{ gridTemplateColumns: "auto 1fr" }}
+						>
+							<Navigation />
+
+							{children}
+						</main>
+					</div>
+				</NextAuthProvider>
 			</body>
 		</html>
 	);
