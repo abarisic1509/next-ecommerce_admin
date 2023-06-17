@@ -52,7 +52,7 @@ export default function Navigation() {
 
 	return (
 		<nav>
-			<ul className="flex flex-col border-x border-x-slate-400">
+			<ul className="flex flex-col border-x border-x-slate-400 bg-slate-700">
 				<li className="border-y border-y-slate-400">
 					<ActiveNavLink href="/">
 						<MdInsertChartOutlined size={32} />
@@ -61,10 +61,7 @@ export default function Navigation() {
 				</li>
 				{links.map((link) => (
 					<li key={link.id} className="border-y border-y-slate-400">
-						<ActiveNavLink
-							href={`/${link.id}`}
-							className="text-xs uppercase font-medium flex flex-col gap-2 px-2 py-3 text-center items-center hover:bg-slate-700"
-						>
+						<ActiveNavLink href={`/${link.id}`}>
 							{getIcon(link.icon)}
 							{link.id}
 						</ActiveNavLink>

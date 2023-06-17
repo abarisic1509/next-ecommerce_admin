@@ -1,3 +1,4 @@
+import MainLayout from "@/components/MainLayout";
 import "./globals.css";
 import { NextAuthProvider } from "@/providers/NextAuthProvider";
 
@@ -10,7 +11,9 @@ export default function RootLayout({ children }) {
 	return (
 		<html lang="en">
 			<body>
-				<NextAuthProvider>{children}</NextAuthProvider>
+				<NextAuthProvider>
+					<MainLayout children={children} />
+				</NextAuthProvider>
 			</body>
 		</html>
 	);
