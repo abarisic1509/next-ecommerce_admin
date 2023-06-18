@@ -5,8 +5,13 @@ import Link from "next/link";
 
 export default function ActiveNavLink({ href, children }) {
 	const pathname = usePathname();
-	const isActive = pathname === href;
+	let isActive = false;
 
+	if (pathname === "/" && href === "/") {
+		isActive = true;
+	} else if (href !== "/" && pathname.startsWith(href)) {
+		isActive = true;
+	}
 	return (
 		<Link
 			href={href}

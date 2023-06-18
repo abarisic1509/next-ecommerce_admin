@@ -1,10 +1,11 @@
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import clientPromise from "./mongodb";
+import clientPromise, { connectToDb } from "./mongodb";
+import Admin from "@/models/users";
 
 export const authOptions = {
-	adapter: MongoDBAdapter(clientPromise),
+	//adapter: MongoDBAdapter(clientPromise),
 	// Configure one or more authentication providers
 	providers: [
 		GoogleProvider({
@@ -27,4 +28,39 @@ export const authOptions = {
 		// 	},
 		// }),
 	],
+	callbacks: {
+		async session({ session }) {
+			const sessionUser = await Admin.findOne({
+				email: session.user.email,
+			});
+
+			session.user.id = sessionUser._id.toString();
+			return session;
+		},
+
+		async signIn({ profile }) {
+			try {
+				await connectToDb();
+
+				//check if user exists
+				const adminExists = await Admin.findOne({
+					email: profile.email,
+				});
+
+				//if not, create a new user
+				if (!adminExists) {
+					//create new admin
+					await Admin.create({
+						email: profile.email,
+						image: profile.picture,
+					});
+				}
+
+				return true;
+			} catch (error) {
+				console.log(error);
+				return false;
+			}
+		},
+	},
 };
