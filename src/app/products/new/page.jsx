@@ -4,10 +4,11 @@ import ProductForm from "@/components/ProductForm";
 import PageWrapper from "@/wrappers/PageWrapper";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { getSession } from "@/lib/session";
 
 export default function NewProduct() {
 	const router = useRouter();
-	const { data: session } = useSession();
+	const session = getSession();
 	const [product, setProduct] = useState({
 		name: "",
 		shortDesc: "",
@@ -15,13 +16,13 @@ export default function NewProduct() {
 		price: 0,
 	});
 
-	console.log(session);
+	//console.log(session);
 
 	const createProduct = async (values, setSubmitting) => {
 		setSubmitting(true);
 
 		try {
-			const response = await fetch("/api/products/new", {
+			const response = await fetch("/api/products", {
 				method: "POST",
 				body: JSON.stringify({
 					name: values.name,

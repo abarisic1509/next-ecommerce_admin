@@ -1,7 +1,6 @@
 "use client";
 import { productSchema } from "@/schemas/productSchema";
 import { Formik } from "formik";
-import { useState } from "react";
 
 export default function ProductForm({ type, product, handleFormSubmit }) {
 	return (
@@ -88,9 +87,10 @@ export default function ProductForm({ type, product, handleFormSubmit }) {
 					<div className="flex justify-between">
 						<button
 							type="submit"
-							className="bg-slate-300 text-slate-800 hover:bg-slate-200 px-4 py-2 h-fit w-fit"
+							disabled={isSubmitting}
+							className="bg-slate-300 text-slate-800 hover:bg-slate-200 px-4 py-2 h-fit w-fit disabled:opacity-50 disabled:pointer-events-none"
 						>
-							Create new product
+							{type === "addProduct" ? "Create new product" : "Save changes"}
 						</button>
 					</div>
 				</form>
