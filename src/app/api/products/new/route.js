@@ -20,5 +20,6 @@ export const POST = async (req) => {
 		return new Response(JSON.stringify(newProduct), { status: 201 });
 	} catch (error) {
 		console.log(error);
+		return new Response("Failed to create new product", { status: 500 });
 	}
 };
