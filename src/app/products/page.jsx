@@ -1,7 +1,7 @@
 import PageWrapper from "@/wrappers/PageWrapper";
 import Link from "next/link";
-import React from "react";
-import { MdDelete, MdEditDocument } from "react-icons/md";
+import { Suspense } from "react";
+import { MdEditDocument } from "react-icons/md";
 
 export default async function Products() {
 	const res = await fetch(`${process.env.BASE_URL}/api/products`, {
@@ -22,24 +22,24 @@ export default async function Products() {
 				</Link>
 			</div>
 
-			<table className="border border-slate-300">
-				<thead className="bg-slate-600 border-b border-slate-300">
-					<tr>
-						<th className="py-2 px-4 text-left border-r border-slate-300">
-							Product name
-						</th>
-						<th className="py-2 px-4 text-center border-r border-slate-300">
-							Product price
-						</th>
-						<th className="py-2 px-4 text-left border-r border-slate-300">
-							Creator
-						</th>
-						<th className="py-2 px-4 text-left">Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{products.length &&
-						products.map((product) => (
+			<Suspense fallback={<p>Loading...</p>}>
+				<table className="border border-slate-300">
+					<thead className="bg-slate-600 border-b border-slate-300">
+						<tr>
+							<th className="py-2 px-4 text-left border-r border-slate-300">
+								Product name
+							</th>
+							<th className="py-2 px-4 text-center border-r border-slate-300">
+								Product price
+							</th>
+							<th className="py-2 px-4 text-left border-r border-slate-300">
+								Creator
+							</th>
+							<th className="py-2 px-4 text-left">Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{products?.map((product) => (
 							<tr key={product._id}>
 								<td className="py-2 px-4 border-b border-x border-slate-500">
 									{product.name}
@@ -51,22 +51,19 @@ export default async function Products() {
 									{product.creator.email}
 								</td>
 								<td className="py-2 px-4 border-b border-x border-slate-500">
-									<p className="flex gap-2">
-										<Link
-											href={`products/${product._id}`}
-											className=" w-10 h-10 grid place-items-center text-2xl hover:bg-slate-600"
-										>
-											<MdEditDocument />
-										</Link>
-										<button className=" w-10 h-10 grid place-items-center text-2xl hover:bg-slate-600">
-											<MdDelete />
-										</button>
-									</p>
+									<Link
+										href={`products/${product._id}`}
+										className="text-2xl hover:bg-slate-600 flex items-center gap-2 px-3 py-1 w-fit whitespace-nowrap"
+									>
+										<MdEditDocument />
+										<span className="text-[18px]">Edit product</span>
+									</Link>
 								</td>
 							</tr>
 						))}
-				</tbody>
-			</table>
+					</tbody>
+				</table>
+			</Suspense>
 		</PageWrapper>
 	);
 }

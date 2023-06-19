@@ -61,3 +61,24 @@ export const PUT = async (req) => {
 		return new Response("Failed to update product", { status: 500 });
 	}
 };
+
+//delete product
+export const DELETE = async (req) => {
+	console.log(req.url);
+	//const { _id } = await req.json();
+	const { searchParams } = new URL(req.url);
+	const _id = searchParams.get("_id") || "";
+
+	try {
+		await connectToDb();
+		await Product.deleteOne({ _id });
+
+		return new Response(
+			JSON.stringify(`Product with the id of ${_id} deleted successfully`),
+			{ status: 201 }
+		);
+	} catch (error) {
+		console.log(error);
+		return new Response("Failed to delete product", { status: 500 });
+	}
+};
