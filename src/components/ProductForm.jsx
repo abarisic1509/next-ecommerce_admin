@@ -1,6 +1,7 @@
 "use client";
 import { productSchema } from "@/schemas/productSchema";
 import { Formik } from "formik";
+import ImageUpload from "./ImageUpload";
 
 export default function ProductForm({ type, product, handleFormSubmit }) {
 	return (
@@ -83,6 +84,37 @@ export default function ProductForm({ type, product, handleFormSubmit }) {
 							<p className=" text-red-600">{errors.longDesc}</p>
 						)}
 					</label>
+					{/* <label htmlFor="featuredImg" className="flex flex-col gap-2">
+						<span>Featured image</span>
+
+						<input
+							type="file"
+							name="featuredImg"
+							id="featuredImg"
+							rows={10}
+							value={values.featuredImg}
+							onChange={handleChange}
+							className="bg-transparent outline-none border border-slate-300 py-2 px-3 w-full"
+						/>
+						{errors.featuredImg && touched.featuredImg && (
+							<p className=" text-red-600">{errors.featuredImg}</p>
+						)}
+					</label> */}
+
+					<ImageUpload
+						name="featuredImg"
+						id="featuredImg"
+						type="single"
+						errors={errors.featuredImg}
+						touched={touched.featuredImg}
+					/>
+					<ImageUpload
+						name="images"
+						id="images"
+						type="multiple"
+						errors={errors.images}
+						touched={touched.images}
+					/>
 
 					<div className="flex justify-between">
 						<button

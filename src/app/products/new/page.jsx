@@ -3,7 +3,6 @@ import { useState } from "react";
 import ProductForm from "@/components/ProductForm";
 import PageWrapper from "@/wrappers/PageWrapper";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { getSession } from "@/lib/session";
 
 export default function NewProduct() {
@@ -14,6 +13,8 @@ export default function NewProduct() {
 		shortDesc: "",
 		longDesc: "",
 		price: 0,
+		featuredImg: "",
+		images: [],
 	});
 
 	//console.log(session);
@@ -21,26 +22,28 @@ export default function NewProduct() {
 	const createProduct = async (values, setSubmitting) => {
 		setSubmitting(true);
 
-		try {
-			const response = await fetch("/api/products", {
-				method: "POST",
-				body: JSON.stringify({
-					name: values.name,
-					shortDesc: values.shortDesc,
-					longDesc: values.longDesc,
-					price: values.price,
-					creatorId: session?.user.id,
-				}),
-			});
+		console.log(values);
 
-			if (response.ok) {
-				router.push("/products");
-			}
-		} catch (error) {
-			console.log(error);
-		} finally {
-			setSubmitting(false);
-		}
+		// try {
+		// 	const response = await fetch("/api/products", {
+		// 		method: "POST",
+		// 		body: JSON.stringify({
+		// 			name: values.name,
+		// 			shortDesc: values.shortDesc,
+		// 			longDesc: values.longDesc,
+		// 			price: values.price,
+		// 			creatorId: session?.user.id,
+		// 		}),
+		// 	});
+
+		// 	if (response.ok) {
+		// 		router.push("/products");
+		// 	}
+		// } catch (error) {
+		// 	console.log(error);
+		// } finally {
+		// 	setSubmitting(false);
+		// }
 	};
 
 	return (

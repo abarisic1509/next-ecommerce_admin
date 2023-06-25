@@ -24,6 +24,19 @@ const ProductSchema = new Schema({
 		type: String,
 		required: [true, "Long description is required"],
 	},
+	featuredImg: {
+		type: String,
+		required: [true, "Featured image is required"],
+	},
+	images: {
+		type: Array,
+		// validate: {
+		// 	validator: function (value) {
+		// 		return value.length >= 1;
+		// 	},
+		// 	message: "At least one image is required",
+		// },
+	},
 	creator: {
 		type: Schema.Types.ObjectId,
 		ref: "Admin",

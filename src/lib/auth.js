@@ -1,7 +1,5 @@
 import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import clientPromise, { connectToDb } from "./mongodb";
+import { connectToDb } from "./mongodb";
 import Admin from "@/models/users";
 
 export const authOptions = {
@@ -30,6 +28,7 @@ export const authOptions = {
 	],
 	callbacks: {
 		async session({ session }) {
+			console.log(session);
 			const sessionUser = await Admin.findOne({
 				email: session.user.email,
 			});
