@@ -3,7 +3,16 @@ import { productSchema } from "@/schemas/productSchema";
 import { Formik } from "formik";
 import ImageUpload from "./ImageUpload";
 
-export default function ProductForm({ type, product, handleFormSubmit }) {
+export default function ProductForm({
+	type,
+	product,
+	handleFormSubmit,
+	featuredImgUrl,
+	imagesUrls,
+	setFeaturedImgUrl,
+	setImagesUrls,
+}) {
+	//console.log(product);
 	return (
 		<Formik
 			initialValues={product}
@@ -105,15 +114,27 @@ export default function ProductForm({ type, product, handleFormSubmit }) {
 						name="featuredImg"
 						id="featuredImg"
 						type="single"
+						value={values.featuredImg}
 						errors={errors.featuredImg}
 						touched={touched.featuredImg}
+						product={product}
+						featuredImgUrl={featuredImgUrl}
+						imagesUrls={imagesUrls}
+						setFeaturedImgUrl={setFeaturedImgUrl}
+						setImagesUrls={setImagesUrls}
 					/>
 					<ImageUpload
 						name="images"
 						id="images"
 						type="multiple"
+						value={values.images}
 						errors={errors.images}
 						touched={touched.images}
+						product={product}
+						featuredImgUrl={featuredImgUrl}
+						imagesUrls={imagesUrls}
+						setFeaturedImgUrl={setFeaturedImgUrl}
+						setImagesUrls={setImagesUrls}
 					/>
 
 					<div className="flex justify-between">

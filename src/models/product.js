@@ -29,13 +29,7 @@ const ProductSchema = new Schema({
 		required: [true, "Featured image is required"],
 	},
 	images: {
-		type: Array,
-		// validate: {
-		// 	validator: function (value) {
-		// 		return value.length >= 1;
-		// 	},
-		// 	message: "At least one image is required",
-		// },
+		type: [String],
 	},
 	creator: {
 		type: Schema.Types.ObjectId,

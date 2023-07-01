@@ -26,6 +26,7 @@ export default async function Products() {
 				<table className="border border-slate-300">
 					<thead className="bg-slate-600 border-b border-slate-300">
 						<tr>
+							<th className="py-2 px-4 text-left border-r border-slate-300"></th>
 							<th className="py-2 px-4 text-left border-r border-slate-300">
 								Product name
 							</th>
@@ -41,6 +42,9 @@ export default async function Products() {
 					<tbody>
 						{products?.map((product) => (
 							<tr key={product._id}>
+								<td className="py-2 px-4 border-b border-x border-slate-500 text-center">
+									<img src={product.featuredImg} className="h-20 w-auto" />
+								</td>
 								<td className="py-2 px-4 border-b border-x border-slate-500">
 									{product.name}
 								</td>

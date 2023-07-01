@@ -38,25 +38,23 @@ export const productSchema = yup.object().shape({
 					(value) => value && value.size <= 5 * 1024 * 1024 // Maximum size: 5MB
 				),
 		})
-		.required("Featured image is required"),
+		.nullable(),
 	images: yup.array().of(
-		yup.object().shape({
-			file: yup
-				.mixed()
-				.test(
-					"fileFormat",
-					"Invalid file format",
-					(value) =>
-						value &&
-						["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-							value.type
-						)
-				)
-				.test(
-					"fileSize",
-					"File size is too large",
-					(value) => value && value.size <= 5 * 1024 * 1024 // Maximum size: 5MB
-				),
-		})
+		yup
+			.mixed()
+			.test(
+				"fileFormat",
+				"Invalid file format",
+				(value) =>
+					value &&
+					["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+						value.type
+					)
+			)
+			.test(
+				"fileSize",
+				"File size is too large",
+				(value) => value && value.size <= 5 * 1024 * 1024 // Maximum size: 5MB
+			)
 	),
 });

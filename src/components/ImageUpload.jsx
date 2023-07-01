@@ -3,10 +3,20 @@ import React, { useCallback, useRef, useState } from "react";
 import { useFormikContext } from "formik";
 import { MdDeleteOutline, MdUpload } from "react-icons/md";
 
-export default function ImageUpload({ name, id, errors, touched, type }) {
+export default function ImageUpload({
+	name,
+	id,
+	errors,
+	touched,
+	type,
+	value,
+	featuredImgUrl,
+	imagesUrls,
+	setFeaturedImgUrl,
+	setImagesUrls,
+}) {
 	const [selectedImage, setSelectedImage] = useState(null);
 	const [selectedFiles, setSelectedFiles] = useState([]);
-	const [filesWithProps, setFilesWithProps] = useState([]);
 	const fileInputRef = useRef();
 	const { setFieldValue } = useFormikContext();
 
@@ -14,28 +24,21 @@ export default function ImageUpload({ name, id, errors, touched, type }) {
 		(event) => {
 			const file = event.target.files[0];
 			setSelectedImage(file);
-			setFieldValue(name, { file });
+			setFieldValue("featuredImg.file", file);
 		},
 		[name, setFieldValue]
 	);
 	const handleFileSelect = useCallback(
 		(event) => {
 			const files = Array.from(event.target.files);
-			const propFiles = files.map((file) => ({
-				file,
-			}));
-			setFilesWithProps((prevFilesWithProps) => {
-				return [...prevFilesWithProps, ...propFiles];
-			});
 			setSelectedFiles((prevSelectedFiles) => {
 				return [...prevSelectedFiles, ...files];
 			});
-			setFieldValue(name, [...filesWithProps]);
-			console.log("files", files);
+			setFieldValue("images", files);
 			// console.log("propFiles", propFiles);
 			// console.log("selectedFiles", selectedFiles);
 		},
-		[name, setFieldValue, filesWithProps, setFilesWithProps, setSelectedFiles]
+		[name, setFieldValue, selectedFiles, setSelectedFiles]
 	);
 
 	const handleRemoveFile = useCallback(
@@ -45,22 +48,31 @@ export default function ImageUpload({ name, id, errors, touched, type }) {
 				updatedFiles.splice(index, 1);
 				return updatedFiles;
 			});
-			setFilesWithProps((prevFiles) => {
-				const updatedFiles = [...prevFiles];
+			// setFilesWithProps((prevFiles) => {
+			// 	const updatedFiles = [...prevFiles];
+			// 	updatedFiles.splice(index, 1);
+			// 	return updatedFiles;
+			// });
+			setFieldValue("images", [
+				...selectedFiles.slice(0, index),
+				...selectedFiles.slice(index + 1),
+			]);
+		},
+		[name, setFieldValue, selectedFiles, setSelectedFiles]
+	);
+	const handleRemoveExistingFile = useCallback(
+		(index) => {
+			setImagesUrls((prev) => {
+				const updatedFiles = [...prev];
 				updatedFiles.splice(index, 1);
 				return updatedFiles;
 			});
-			setFieldValue(name, [
-				...filesWithProps.slice(0, index),
-				...filesWithProps.slice(index + 1),
-			]);
 		},
-		[name, setFieldValue, filesWithProps, setFilesWithProps, setSelectedFiles]
+		[setImagesUrls]
 	);
 
 	const clearSelectedFiles = useCallback(() => {
 		setSelectedFiles([]);
-		setFilesWithProps([]);
 		setFieldValue(name, []);
 		fileInputRef.current.value = "";
 	}, []);
@@ -131,6 +143,31 @@ export default function ImageUpload({ name, id, errors, touched, type }) {
 					</button>
 				)}
 				{errors && touched && <p className=" text-red-600">{errors}</p>}
+				{imagesUrls && imagesUrls.length > 0 && (
+					<div>
+						<div className="flex flex-wrap gap-4">
+							{imagesUrls.map((file, index) => (
+								<div
+									key={index}
+									className="relative h-40 w-[130px] flex items-center justify-center border border-slate-500 p-2"
+								>
+									<img
+										src={file}
+										alt={`Preview ${index}`}
+										className=" object-contain max-h-full object-center"
+									/>
+									<button
+										type="button"
+										onClick={() => handleRemoveFile(index)}
+										className="absolute bottom-0 left-0 w-10 h-10 grid place-items-center border-red-700 bg-red-50 text-red-700 text-2xl"
+									>
+										<MdDeleteOutline />
+									</button>
+								</div>
+							))}
+						</div>
+					</div>
+				)}
 			</div>
 		);
 	}
@@ -147,16 +184,35 @@ export default function ImageUpload({ name, id, errors, touched, type }) {
 					onChange={handleImageSelect}
 					className="hidden absolute top-0 left-0 w-full h-full"
 				/>
-				{!selectedImage && <p className="text-xl">Choose</p>}
-				{selectedImage && (
+				{/* {featuredImgUrl && (
+					<img
+						src={featuredImgUrl}
+						alt="Featured image"
+						className=" object-contain max-h-full object-center"
+					/>
+				)} */}
+				{selectedImage ? (
 					<img
 						src={URL.createObjectURL(selectedImage)}
 						alt="Featured image"
 						className=" object-contain max-h-full object-center"
 					/>
+				) : (
+					featuredImgUrl && (
+						<img
+							src={featuredImgUrl}
+							alt="Featured image"
+							className=" object-contain max-h-full object-center"
+						/>
+					)
 				)}
+				{!selectedImage && !featuredImgUrl && <p className="text-xl">Choose</p>}
 			</div>
-			{errors && touched && <p className=" text-red-600">{errors}</p>}
+			{errors && touched && (
+				<p className=" text-red-600">
+					{typeof errors === "string" ? errors : errors.file}
+				</p>
+			)}
 		</label>
 	);
 }

@@ -19,7 +19,8 @@ export async function GET(req) {
 
 //create new product
 export const POST = async (req) => {
-	const { name, shortDesc, longDesc, price, creatorId } = await req.json();
+	const { name, shortDesc, longDesc, price, featuredImg, images, creatorId } =
+		await req.json();
 
 	try {
 		await connectToDb();
@@ -29,6 +30,8 @@ export const POST = async (req) => {
 			shortDesc,
 			longDesc,
 			price,
+			featuredImg,
+			images,
 			creator: creatorId,
 		});
 
@@ -43,7 +46,8 @@ export const POST = async (req) => {
 
 //update new product
 export const PUT = async (req) => {
-	const { name, shortDesc, longDesc, price, _id } = await req.json();
+	const { name, shortDesc, longDesc, price, featuredImg, images, _id } =
+		await req.json();
 
 	try {
 		await connectToDb();
@@ -52,6 +56,8 @@ export const PUT = async (req) => {
 			shortDesc,
 			longDesc,
 			price,
+			featuredImg,
+			images,
 		};
 		await Product.updateOne({ _id }, updatedProductObj);
 

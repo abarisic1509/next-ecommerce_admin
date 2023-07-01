@@ -10,6 +10,8 @@ import { MdDelete } from "react-icons/md";
 export default function EditProduct({ params: { id } }) {
 	const router = useRouter();
 	const [product, setProduct] = useState({});
+	const [featuredImgUrl, setFeaturedImgUrl] = useState("");
+	const [imagesUrls, setImagesUrls] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [submittingDelete, setSubmittingDelete] = useState(false);
@@ -20,12 +22,22 @@ export default function EditProduct({ params: { id } }) {
 
 	const fetchProduct = async (id) => {
 		setLoading(true);
+
 		try {
 			const res = await fetch(`/api/products?productId=${id}`);
 			const data = await res.json();
 			const productData = data.filter((product) => product._id === id);
 
-			setProduct(productData[0]);
+			setProduct({
+				name: productData[0].name,
+				shortDesc: productData[0].shortDesc,
+				longDesc: productData[0].longDesc,
+				price: productData[0].price,
+				featuredImg: "",
+				images: [],
+			});
+			setFeaturedImgUrl(productData[0].featuredImg);
+			setImagesUrls(productData[0].images);
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -35,6 +47,27 @@ export default function EditProduct({ params: { id } }) {
 	const editProduct = async (values, setSubmitting) => {
 		setSubmitting(true);
 
+		if (values.featuredImg) {
+			const imgId = getPublicIdFromUrl(featuredImgUrl);
+			await deleteImageFromCloud(featuredImgUrl, imgId);
+			const featuredImgUrlNew = await uploadImageToCloudinary(
+				values.featuredImg.file
+			);
+
+			setFeaturedImgUrl(featuredImgUrlNew);
+		}
+
+		if (values.images) {
+			const imagesUrlsNew = await Promise.all(
+				values.images.map(async (image) => {
+					const imageUrl = await uploadImageToCloudinary(image);
+					return imageUrl;
+				})
+			);
+
+			setImagesUrls((prev) => [...prev, ...imagesUrlsNew]);
+		}
+
 		try {
 			const response = await fetch("/api/products", {
 				method: "PUT",
@@ -43,6 +76,8 @@ export default function EditProduct({ params: { id } }) {
 					shortDesc: values.shortDesc,
 					longDesc: values.longDesc,
 					price: values.price,
+					featuredImg: featuredImgUrl,
+					images: imagesUrls,
 					_id: id,
 				}),
 			});
@@ -55,6 +90,11 @@ export default function EditProduct({ params: { id } }) {
 		} finally {
 			setSubmitting(false);
 		}
+	};
+	const getPublicIdFromUrl = (url) => {
+		const regex = /\/v\d+\/([^/]+)\.\w{3,4}$/;
+		const match = url.match(regex);
+		return match ? match[1] : null;
 	};
 
 	const handleModalOpen = (id) => {
@@ -83,7 +123,32 @@ export default function EditProduct({ params: { id } }) {
 		}
 	};
 
-	//console.log(product);
+	const deleteImageFromCloud = async (imageUrl, publicId) => {
+		try {
+			const cloudinaryDeleteUrl = `https://api.cloudinary.com/v1_1/duipztnnd/delete_by_token/${publicId}`;
+			const response = await fetch(cloudinaryDeleteUrl, {
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					imageUrl,
+				}),
+			});
+
+			if (response.ok) {
+				// Image successfully deleted from Cloudinary
+				console.log("Image deleted from Cloudinary");
+			} else {
+				// Error occurred while deleting the image
+				console.log("Error deleting image from Cloudinary");
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	console.log(product);
 
 	return (
 		<PageWrapper>
@@ -106,6 +171,10 @@ export default function EditProduct({ params: { id } }) {
 				<ProductForm
 					type="editProduct"
 					product={product}
+					featuredImgUrl={featuredImgUrl}
+					setFeaturedImgUrl={setFeaturedImgUrl}
+					imagesUrls={imagesUrls}
+					setImagesUrls={setImagesUrls}
 					handleFormSubmit={editProduct}
 				/>
 			)}

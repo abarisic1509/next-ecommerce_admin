@@ -4,6 +4,7 @@ import ProductForm from "@/components/ProductForm";
 import PageWrapper from "@/wrappers/PageWrapper";
 import { useRouter } from "next/navigation";
 import { getSession } from "@/lib/session";
+import { uploadImageToCloudinary } from "@/lib/uploadImages";
 
 export default function NewProduct() {
 	const router = useRouter();
@@ -22,28 +23,39 @@ export default function NewProduct() {
 	const createProduct = async (values, setSubmitting) => {
 		setSubmitting(true);
 
-		console.log(values);
+		const featuredImgUrl = await uploadImageToCloudinary(
+			values.featuredImg.file
+		);
 
-		// try {
-		// 	const response = await fetch("/api/products", {
-		// 		method: "POST",
-		// 		body: JSON.stringify({
-		// 			name: values.name,
-		// 			shortDesc: values.shortDesc,
-		// 			longDesc: values.longDesc,
-		// 			price: values.price,
-		// 			creatorId: session?.user.id,
-		// 		}),
-		// 	});
+		const imagesUrl = await Promise.all(
+			values.images.map(async (image) => {
+				const imageUrl = await uploadImageToCloudinary(image);
+				return imageUrl;
+			})
+		);
 
-		// 	if (response.ok) {
-		// 		router.push("/products");
-		// 	}
-		// } catch (error) {
-		// 	console.log(error);
-		// } finally {
-		// 	setSubmitting(false);
-		// }
+		try {
+			const response = await fetch("/api/products", {
+				method: "POST",
+				body: JSON.stringify({
+					name: values.name,
+					shortDesc: values.shortDesc,
+					longDesc: values.longDesc,
+					price: values.price,
+					featuredImg: featuredImgUrl,
+					images: imagesUrl,
+					creatorId: session?.user.id,
+				}),
+			});
+
+			if (response.ok) {
+				router.push("/products");
+			}
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setSubmitting(false);
+		}
 	};
 
 	return (
